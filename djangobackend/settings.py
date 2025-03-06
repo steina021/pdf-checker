@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-i&cjrf7tr@(kob&t+ev^@@2m)m7yir7xlw5jz4_&rl)z65s)%p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app','localhost']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'pdfchecker',
 ]
 
 MIDDLEWARE = [
