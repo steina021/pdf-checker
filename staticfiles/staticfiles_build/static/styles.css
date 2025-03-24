@@ -1,0 +1,141 @@
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+h2 {
+    color: #f6fdff;
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+#fileInput {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+iframe {
+    margin-top: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    display: none;
+}
+
+/* Button styling */
+.button-container {
+display: flex;
+justify-content: center;
+gap: 15px; /* Space between buttons */
+}
+
+#removeBtn, #scanBtn {
+margin-top: 20px;
+padding: 12px 25px;
+font-size: 18px;
+border: none;
+border-radius: 30px;
+color: white;
+cursor: pointer;
+transition: all 0.3s ease;
+font-weight: bold;
+box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+display: none; /* Hidden by default */
+}
+
+/* Fjern PDF button */
+#removeBtn {
+background-color: #ff4d4d;
+}
+
+#removeBtn:hover {
+background-color: #cc0000;
+transform: scale(1.05);
+}
+
+/* Scan PDF button */
+#scanBtn {
+background-color: #4CAF50;
+}
+
+#scanBtn:hover {
+background-color: #388E3C;
+transform: scale(1.05);
+}
+
+
+#fileInput {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Custom button */
+#customFileBtn {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background-color: #2b86e2;
+    border-radius: 30px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.75px; /* Adjust spacing slightly */
+}
+
+/* Hover effect */
+#customFileBtn:hover {
+    background-color: #1f6bb5;
+    transform: scale(1.05);
+}
+
+/* Active effect */
+#customFileBtn:active {
+    transform: scale(0.95);
+}
+
+/* Styling for the result container */
+.result-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Title for extracted text and pages */
+.result-container h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Paragraph for extracted text and page count */
+.result-container p {
+    font-size: 1em;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.wrapper {
+background-color: #91a1c6;
+width: 100%;
+min-height: 200px;
+padding: 20px;
+}
+
+
