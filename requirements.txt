@@ -1,0 +1,3 @@
+pypdf
+Django>=4.2,<5.0  # Latest stable version in the 4.x series
+djangorestframework  # For building REST APIs
