@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-i&cjrf7tr@(kob&t+ev^@@2m)m7yir7xlw5jz4_&rl)z65s)%p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app','localhost','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -117,14 +118,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATIC_URL = "/static/"
+STATIC_URL = "/static/"  # The URL prefix for static files
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # Main static folder
     BASE_DIR / "pdfchecker/static",  # Additional static folder
 ]
-
 
 STATIC_ROOT = BASE_DIR / "staticfiles" 
 
