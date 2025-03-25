@@ -134,13 +134,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Specify the directory for uploaded files inside the pdfchecker app
-MEDIA_URL = '/media/'  # URL path for media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'pdfchecker', 'media')  # The actual file system path for media files
-
-# Ensure that the directory exists
-if not os.path.exists(MEDIA_ROOT):
-    os.makedirs(MEDIA_ROOT)
-
 # Allow large file uploads if necessary
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # Set the maximum file size in bytes (10MB here)
