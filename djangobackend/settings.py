@@ -129,6 +129,11 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles" 
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://django-back-end-production.up.railway.app",
+    "https://django-back-end-production.up.railway.app/pdfchecker/scan_pdf",
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
