@@ -19,7 +19,7 @@ def scan_pdf(request):
             pdf_content = uploaded_file.read()
             pdf_file_obj = BytesIO(pdf_content)
 
-            # Open the PDF using PyPDF2 from in-memory content
+            # Open the PDF using pypdf from in-memory content
             reader = PdfReader(pdf_file_obj)
 
             extracted_text = ""
