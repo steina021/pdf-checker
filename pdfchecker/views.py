@@ -1,4 +1,5 @@
 import os
+
 from pypdf import PdfReader
 from django.shortcuts import render
 from django.http import JsonResponse

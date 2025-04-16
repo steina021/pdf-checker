@@ -1,23 +1,31 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Logger
-from .serializer import LoggerSerializer
-
-@api_view(['GET'])
-def get_logs(request):
-    logs = Logger.objects.all()
-    serializer = LoggerSerializer(logs, many=True)
-    return Response(serializer.data)
+from .serializers import LoggerSerializer
+from api.pdf_checker.check_accessibility import check_accessibility
 
 @api_view(['POST'])
 def create_log(request):
+    # Expecting: { "pdf_url": "<some URL or path>", "password": "optional" }
+    pdf_url = request.data.get("pdf_url")
+    password = request.data.get("password", "")
 
-    serializer = LoggerSerializer(data=request.data)
+    if not pdf_url:
+        return Response({"error": "pdf_url is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        accessibility_report = check_accessibility(pdf_url, password=password)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Save it via serializer if needed (optional)
+    serializer = LoggerSerializer(data={
+        "pdf_url": pdf_url,
+        "accessibility_report": accessibility_report
+    })
 
     if serializer.is_valid():
-
         serializer.save()
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
