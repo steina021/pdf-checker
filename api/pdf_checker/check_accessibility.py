@@ -1,8 +1,9 @@
-# check_accessibility.py
+# Function for API call
 from . import pdfAWAM
 import requests
 import io
 
+# Source is the PDF URL
 def check_accessibility(source, password='', verbose=False, report=False):
     """
     Returns the accessibility check result in JSON format.

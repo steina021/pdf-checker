@@ -10,7 +10,8 @@ pip install -r requirements.txt
 
 ```json
 {
-    "test": "SKRIV NOE HER"
+    "pdf_url": "URL TIL PDF HER",
+    "password": ""
 }
 ```
 

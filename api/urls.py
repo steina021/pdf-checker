@@ -1,7 +1,6 @@
-from django import urls
 from django.urls import path
-from .views import create_log
+from .views import check_pdf
 
 urlpatterns = [
-    path('loggers/create', create_log, name='create_log'),
+    path('check-pdf/', check_pdf, name='check_pdf'),
 ]
