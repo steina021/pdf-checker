@@ -5,8 +5,14 @@ from .serializers import LoggerSerializer
 from api.pdf_checker.check_accessibility import check_accessibility
 
 @api_view(['POST'])
-def create_log(request):
-    # Expecting: { "pdf_url": "<some URL or path>", "password": "optional" }
+def check_pdf(request):
+    
+    # Expecting: 
+    # { 
+    #   "pdf_url": "<some URL or path>", 
+    #   "password": "optional" 
+    # }
+
     pdf_url = request.data.get("pdf_url")
     password = request.data.get("password", "")
 
@@ -18,7 +24,7 @@ def create_log(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # Save it via serializer if needed (optional)
+    # Save it via serializer if needed
     serializer = LoggerSerializer(data={
         "pdf_url": pdf_url,
         "accessibility_report": accessibility_report

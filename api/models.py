@@ -7,7 +7,6 @@ class Logger(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     #ip = models.FloatField()
-    #time = models.TimeField()
     #process_time = models.FloatField()
     #size = models.FloatField()
     #pages = models.IntegerField()

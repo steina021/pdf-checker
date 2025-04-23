@@ -16,7 +16,7 @@ def checkAcc(pdffile_or_url, passwd='', verbose=False, report=False, json_value=
         stream = io.BytesIO(data)
     else:
         stream = open(pdffile_or_url, 'rb')
-        
+
     ret = pdfAWAM.extractAWAMIndicators(stream, passwd, verbose, report,
                                         json_value, console=True)
     # import pdb;pdb.set_trace()

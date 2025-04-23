@@ -6,12 +6,15 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Last opp PDF</title>
+    <title>Check PDF accessibility</title>
 </head>
 <body>
 
     <div class="wrapper">
-        <h2>Last opp en PDF-fil</h2>
+        <h2>Check by URL</h2>
+        <input type="url" id="urlInput">
+        <label for="urlInput" id="customUrlBtn">📂 Check</label>
+        <h2>Check by file upload</h2>
         <input type="file" id="fileInput" accept="application/pdf">
         <label for="fileInput" id="customFileBtn">📂 Velg en PDF</label>
 
@@ -34,6 +37,69 @@
     document.getElementById('customFileBtn').addEventListener('click', function() {
         document.getElementById('fileInput').click(); // Trigger file input on custom label click
     });
+
+    document.getElementById('customUrlBtn').addEventListener('click', function() {
+    const urlInput = document.getElementById('urlInput');
+    const urlValue = urlInput.value;
+
+    if (!urlValue) {
+        alert("Please enter a valid URL.");
+        return;
+    }
+
+    const payload = {
+        pdf_url: urlValue,
+        // password: "optional" // include if needed
+    };
+
+    fetch("/api/check-pdf/", {  // Adjust if you're using a different route
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+    const resultContainer = document.getElementById("result");
+    resultContainer.innerHTML = ""; // Clear previous results
+
+    const title = document.createElement("h3");
+    title.textContent = "Accessibility Report:";
+
+    const pre = document.createElement("pre");
+    pre.textContent = JSON.stringify(data, null, 2); // Pretty-print JSON
+
+    resultContainer.appendChild(title);
+    resultContainer.appendChild(pre);
+    resultContainer.removeAttribute("hidden");
+
+    // Optional: Scroll to result
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+    });
+})
+
+    .catch(error => {
+        console.error("Error:", error);
+    });
+});
+
+
+        // Add CSRF token for security
+        urlData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+        // Send the form data via AJAX
+        fetch("{% url 'scan_pdf' %}", {  // Ensure this URL is correctly mapped in your Django urls.py
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())  // Ensure you parse the response as JSON
+        .then(data => {
+    });
+
 
     // Handle file selection and PDF preview
     document.getElementById('fileInput').addEventListener('change', function(event) {
