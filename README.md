@@ -16,5 +16,3 @@ pip install -r requirements.txt
 ```
 
 skriv det i content-boksen for å teste API-et, viktig at dere prøver ut dette slik at dere skjønner dette.
-
-Hei
