@@ -138,4 +138,14 @@ min-height: 200px;
 padding: 20px;
 }
 
-
+#header-main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #91a1c6;
+    color: #fff;
+    padding: 15px;
+    border-bottom: 5px #ccc;
+    margin: 0 !important;
+}
