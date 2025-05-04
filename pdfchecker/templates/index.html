@@ -1,4 +1,4 @@
-{% load static %} 
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="no">
@@ -7,86 +7,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check PDF accessibility</title>
+    <style>
+        /* Style for the Scan PDF button, initially disabled */
+        #scanBtn {
+            display: none; 
+            margin-top: 10px; /* Add some top margin */
+            opacity: 0.5; /* Initially semi-transparent to indicate disabled state */
+            pointer-events: none; /* Prevent clicks when disabled */
+        }
+
+        /* Style to enable the Scan PDF button */
+        #scanBtn.enabled {
+            display: block; /* Make it a block-level element */
+            opacity: 1; /* Make it fully visible */
+            pointer-events: auto; /* Allow clicks when enabled */
+        }
+    </style>
 </head>
 <body>
+    <div id="header-main">
+        Tingtun PDF checker
+    </div>
 
     <div class="wrapper">
         <h2>Check by URL</h2>
         <input type="url" id="urlInput">
         <label for="urlInput" id="customUrlBtn">📂 Check</label>
+
         <h2>Check by file upload</h2>
         <input type="file" id="fileInput" accept="application/pdf">
         <label for="fileInput" id="customFileBtn">📂 Velg en PDF</label>
-
-        <div hidden="true" id="result" class="result-container"></div>
+        <button id="scanBtn">📄 Check</button> <div hidden="true" id="result" class="result-container"></div>
     </div>
-    
-<br><br>
 
-<iframe id="pdfViewer" width="50%" height="450px"></iframe>
-<br>
+    <br><br>
 
-<!-- Button container -->
-<div class="button-container">
-    <button id="removeBtn">🗑 Fjern PDF</button>
-    <button id="scanBtn">📄 Scan PDF</button>
-</div>
+    <iframe id="pdfViewer" width="50%" height="450px"></iframe>
+    <br>
 
-<script>
-    // Trigger file input on custom button click
-    document.getElementById('customFileBtn').addEventListener('click', function() {
-        document.getElementById('fileInput').click(); // Trigger file input on custom label click
-    });
+    <div class="button-container">
+        <button id="removeBtn">🗑 Fjern PDF</button>
+    </div>
 
-    document.getElementById('customUrlBtn').addEventListener('click', function() {
-    const urlInput = document.getElementById('urlInput');
-    const urlValue = urlInput.value;
+    <script>
+        // Variable to store the selected PDF file
+        let selectedPDF = null;
 
-    if (!urlValue) {
-        alert("Please enter a valid URL.");
-        return;
-    }
+        // Function to send the PDF (either file or URL) to the backend for checking
+        function checkPDF({ file = null, url = null }) {
+            const resultContainer = document.getElementById("result");
+            resultContainer.innerHTML = ""; // Clear previous results
 
-    const payload = {
-        pdf_url: urlValue,
-        // password: "optional" // include if needed
-    };
+            const headers = {
+                "X-CSRFToken": "{{ csrf_token }}" // Include CSRF token for Django
+            };
 
-    fetch("/api/check-pdf/", {  // Adjust if you're using a different route
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}"
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-    const resultContainer = document.getElementById("result");
-    resultContainer.innerHTML = ""; // Clear previous results
+            let body;
 
-    const title = document.createElement("h3");
-    title.textContent = "Accessibility Report:";
+            // Prepare the request body based on whether a file or URL is provided
+            if (file) {
+                body = new FormData(); // Use FormData for file uploads
+                body.append("pdf_file", file);
+            } else if (url) {
+                headers["Content-Type"] = "application/json"; // Set content type for JSON data
+                body = JSON.stringify({ pdf_url: url }); // Send URL in JSON format
+            } else {
+                alert("No PDF file or URL provided.");
+                return;
+            }
 
-    const pre = document.createElement("pre");
-    pre.textContent = JSON.stringify(data, null, 2); // Pretty-print JSON
+            // Send the request to the backend API endpoint
+            fetch("/api/check-pdf/", {
+                method: "POST",
+                headers: headers,
+                body: body
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the successful response from the backend
+                const box = document.createElement("div");
+                box.className = "result-box";
 
-    resultContainer.appendChild(title);
-    resultContainer.appendChild(pre);
-    resultContainer.removeAttribute("hidden");
+                // Display the summary of the accessibility report
+                const summaryTitle = document.createElement("h3");
+                summaryTitle.textContent = "Summary";
+                box.appendChild(summaryTitle);
 
-    // Optional: Scroll to result
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
-    });
-})
+                const summary = data.accessibility_report.summary;
+                for (const key in summary) {
+                    const item = document.createElement("div");
+                    item.className = "result-item";
+                    item.textContent = `${key}: ${summary[key]}`;
+                    box.appendChild(item);
+                }
 
-    .catch(error => {
-        console.error("Error:", error);
-    });
-});
-</script>
+                // Display the detailed accessibility check results
+                const resultsTitle = document.createElement("h3");
+                resultsTitle.textContent = "Accessibility Checks";
+                box.appendChild(resultsTitle);
 
+                const results = data.accessibility_report.result;
+                if (results.length === 0) {
+                    const item = document.createElement("div");
+                    item.className = "result-item";
+                    item.textContent = "No accessibility issues found!";
+                    box.appendChild(item);
+                } else {
+                    results.forEach(test => {
+                        const item = document.createElement("div");
+                        item.className = "result-item";
+                        const status = String(test.Status).toLowerCase();
+                        item.classList.add(status === "pass" ? "pass" : "fail");
+                        item.innerHTML = `<strong>${test.Description}</strong> (${test.Test}): ${test.Status}`;
+                        box.appendChild(item);
+                    });
+                }
+
+                // Append the result box to the result container and make it visible
+                resultContainer.appendChild(box);
+                resultContainer.classList.add("visible");
+
+                // ✅ Clear memory and UI state after successful check
+                selectedPDF = null;
+                document.getElementById('fileInput').value = '';
+                document.getElementById('pdfViewer').src = '';
+                document.getElementById('scanBtn').classList.remove('enabled');
+
+                // Scroll to the bottom to show the results
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            })
+            .catch(error => {
+                // Handle errors during the API call
+                console.error("Error:", error);
+                alert("There was an error during the check.");
+            });
+        }
+
+        // Event listener for clicking the custom file upload button to trigger the hidden file input
+        document.getElementById('customFileBtn').addEventListener('click', function () {
+            document.getElementById('fileInput').click();
+        });
+
+        // Event listener for when a file is selected through the file input
+        document.getElementById('fileInput').addEventListener('change', function () {
+            const file = this.files[0]; // Get the selected file
+            if (!file) return; // If no file is selected, do nothing
+
+            selectedPDF = file; // Store the selected file
+
+            // Preview the selected PDF in the iframe
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("pdfViewer").src = e.target.result;
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL
+
+            // Enable the Scan button and update its text
+            const scanBtn = document.getElementById('scanBtn');
+            scanBtn.classList.add('enabled');
+            scanBtn.textContent = '📄 Check';
+        });
+
+        // Event listener for clicking the Scan PDF button
+        document.getElementById('scanBtn').addEventListener('click', function () {
+            if (!selectedPDF) {
+                alert("Please upload a PDF first.");
+                return;
+            }
+
+            // Call the checkPDF function with the selected file
+            checkPDF({ file: selectedPDF });
+        });
+
+        // Event listener for clicking the Check button for URL
+        document.getElementById('customUrlBtn').addEventListener('click', function () {
+            const url = document.getElementById('urlInput').value.trim(); // Get the entered URL and trim whitespace
+            if (!url) {
+                alert("Please enter a valid URL.");
+                return;
+            }
+            // Call the checkPDF function with the provided URL
+            checkPDF({ url: url });
+        });
+
+        // Event listener for clicking the Remove PDF button
+        document.getElementById('removeBtn').addEventListener('click', function () {
+            // Reset the selected PDF, file input, PDF viewer, Scan button state, and results
+            selectedPDF = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('pdfViewer').src = '';
+            document.getElementById('scanBtn').classList.remove('enabled');
+            document.getElementById('result').innerHTML = '';
+        });
+    </script>
 </body>
 </html>
